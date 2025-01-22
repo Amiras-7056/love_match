@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Match Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .instructions {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Love Match Calculator</h1>
+        <form id="compatibilityForm">
+            <label for="name1">Person 1 Name:</label>
+            <input type="text" id="name1" required>
+
+            <label for="name2">Person 2 Name:</label>
+            <input type="text" id="name2" required>
+
+            <label for="traits1">Person 1 Traits (comma separated):</label>
+            <input type="text" id="traits1" placeholder="Extraversion, Agreeableness, ..." required>
+
+            <label for="traits2">Person 2 Traits (comma separated):</label>
+            <input type="text" id="traits2" placeholder="Extraversion, Agreeableness, ..." required>
+
+            <label for="behavior1">Person 1 Behavior (comma separated):</label>
+            <input type="text" id="behavior1" placeholder="Try new things, Group activities, ..." required>
+
+            <label for="behavior2">Person 2 Behavior (comma separated):</label>
+            <input type="text" id="behavior2" placeholder="Try new things, Group activities, ..." required>
+
+            <label for="interests1">Person 1 Interests:</label>
+            <input type="text" id="interests1" placeholder="e.g., reading, sports" required>
+
+            <label for="interests2">Person 2 Interests:</label>
+            <input type="text" id="interests2" placeholder="e.g., reading, sports" required>
+
+            <button type="button" onclick="calculateCompatibility()">Calculate Compatibility</button>
+            <button type="reset">Reset</button>
+        </form>
+
+        <button onclick="showInstructions()">View Instructions</button>
+
+        <div id="instructions" class="instructions">
+            <h3>Personality Traits:</h3>
+            <p><strong>Extraversion:</strong> Tendency to be outgoing and energetic.</p>
+            <p><strong>Agreeableness:</strong> Tendency to be compassionate and cooperative.</p>
+            <p><strong>Conscientiousness:</strong> Tendency to be organized, responsible, and hardworking.</p>
+            <p><strong>Neuroticism:</strong> Tendency to experience emotional instability and anxiety.</p>
+            <p><strong>Openness:</strong> Tendency to be open-minded and curious about new experiences.</p>
+            <p><strong>Emotional Stability:</strong> Ability to remain calm and composed under stress.</p>
+            <p><strong>Resilience:</strong> Ability to recover from adversity and bounce back from challenges.</p>
+            <p><strong>Leadership:</strong> Ability to guide and influence others in a positive direction.</p>
+            <p><strong>Adaptability:</strong> Ability to adjust to new situations and changes easily.</p>
+
+            <h3>Behavioral Traits:</h3>
+            <p><strong>Try new things:</strong> Willingness to engage in new experiences.</p>
+            <p><strong>Group activities:</strong> Preference for social interactions and group settings.</p>
+            <p><strong>Honesty:</strong> Openness and truthfulness in communication.</p>
+            <p><strong>Communication:</strong> Ability to clearly express ideas and listen to others.</p>
+            <p><strong>Trust:</strong> Confidence in others and reliability.</p>
+            <p><strong>Conflict resolution:</strong> Ability to manage and resolve disputes effectively.</p>
+        </div>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function showInstructions() {
+            document.getElementById("instructions").style.display = "block";
+        }
+
+        function calculateCompatibility() {
+            var name1 = document.getElementById("name1").value;
+            var name2 = document.getElementById("name2").value;
+
+            var traits1 = document.getElementById("traits1").value.split(',').map(Number);
+            var traits2 = document.getElementById("traits2").value.split(',').map(Number);
+
+            var behavior1 = document.getElementById("behavior1").value.split(',').map(Number);
+            var behavior2 = document.getElementById("behavior2").value.split(',').map(Number);
+
+            var interests1 = document.getElementById("interests1").value;
+            var interests2 = document.getElementById("interests2").value;
+
+            // Calculate personality compatibility
+            var maxTraitValue = 5;
+            var traitScores = traits1.map((trait, i) => 1 - Math.abs(trait - traits2[i]) / maxTraitValue);
+            var personalitySum = traitScores.reduce((sum, score) => sum + score, 0);
+
+            // Calculate behavioral compatibility
+            var behavioralScore = behavior1.map((behavior, i) => 5 - Math.abs(behavior - behavior2[i])).reduce((sum, score) => sum + score, 0) / behavior1.length;
+
+            // Calculate interest compatibility
+            var interestScore = cosineSimilarity(interests1, interests2) * 100;
+
+            // Final compatibility score
+            var compatibilityScore = (0.4 * personalitySum) + (0.3 * behavioralScore) + (0.3 * interestScore / 100 * 5);
+
+            var cs9 = Math.round(compatibilityScore / 5 * 9);
+            var cs100 = Math.round(compatibilityScore / 5 * 100);
+
+            document.getElementById("result").innerText = name1 + " and " + name2 + "\nCS (1-9): " + cs9 + "\nCS (1-100%): " + cs100 + "%";
+        }
+
+        function cosineSimilarity(str1, str2) {
+            var words1 = str1.split(' ');
+            var words2 = str2.split(' ');
+
+            var allWords = Array.from(new Set([...words1, ...words2]));
+            var vector1 = allWords.map(word => words1.includes(word) ? 1 : 0);
+            var vector2 = allWords.map(word => words2.includes(word) ? 1 : 0);
+
+            var dotProduct = vector1.reduce((sum, value, index) => sum + (value * vector2[index]), 0);
+            var magnitude1 = Math.sqrt(vector1.reduce((sum, value) => sum + value * value, 0));
+            var magnitude2 = Math.sqrt(vector2.reduce((sum, value) => sum + value * value, 0));
+
+            return dotProduct / (magnitude1 * magnitude2);
+        }
+    </script>
+</body>
+</html>
